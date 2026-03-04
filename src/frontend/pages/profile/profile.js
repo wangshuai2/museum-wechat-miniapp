@@ -239,6 +239,27 @@ Page({
     })
   },
 
+  // 跳转到参观足迹
+  goToFootprints() {
+    wx.navigateTo({
+      url: '/pages/footprints/footprints'
+    })
+  },
+
+  // 跳转到我的笔记
+  goToNotes() {
+    wx.navigateTo({
+      url: '/pages/notes/notes'
+    })
+  },
+
+  // 跳转到我的收藏
+  goToFavorites() {
+    wx.navigateTo({
+      url: '/pages/favorites/favorites'
+    })
+  },
+
   // 退出登录
   logout() {
     wx.showModal({

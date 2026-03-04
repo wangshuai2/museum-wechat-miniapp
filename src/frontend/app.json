@@ -4,7 +4,11 @@
     "pages/login/login",
     "pages/museum-detail/museum-detail",
     "pages/profile/profile",
-    "pages/footprints/footprints"
+    "pages/footprints/footprints",
+    "pages/notes/notes",
+    "pages/note-edit/note-edit",
+    "pages/favorites/favorites",
+    "pages/favorite-detail/favorite-detail"
   ],
   "window": {
     "backgroundTextStyle": "light",

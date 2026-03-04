@@ -1,0 +1,181 @@
+<!--pages/favorites/favorites.wxml-->
+<view class="favorites-container">
+  <!-- Tab 切换 -->
+  <view class="tabs-header">
+    <view 
+      wx:for="{{tabs}}" 
+      wx:key="key"
+      class="tab-item {{activeTab === item.key ? 'active' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onTabChange"
+    >
+      <text class="tab-name">{{item.name}}</text>
+      <text class="tab-count">{{item.key === 'exhibit' ? statistics.exhibitCount : statistics.museumCount}}</text>
+    </view>
+  </view>
+
+  <!-- 展品收藏列表 -->
+  <view wx:if="{{activeTab === 'exhibit'}}" class="favorites-list">
+    <block wx:for="{{exhibitFavorites}}" wx:key="_id">
+      <view class="favorite-card exhibit-card" data-id="{{item._id}}" bindtap="goToExhibitDetail">
+        <!-- 封面图 -->
+        <view class="card-image-wrapper">
+          <image 
+            class="card-image" 
+            src="{{item.imageUrl || '/assets/images/default-cover.jpg'}}" 
+            mode="aspectFill"
+          />
+          <!-- 状态标签 -->
+          <view class="status-badge {{item.status}}">
+            {{item.status === 'want' ? '想去' : '已去过'}}
+          </view>
+        </view>
+
+        <!-- 卡片内容 -->
+        <view class="card-content">
+          <view class="card-header">
+            <text class="card-title">{{item.exhibitName}}</text>
+          </view>
+          
+          <text class="card-desc">{{item.description}}</text>
+          
+          <view class="card-footer">
+            <view class="location-info">
+              <text class="iconfont">📍</text>
+              <text class="museum-name">{{item.museumName}}</text>
+            </view>
+            <text class="collect-time">收藏于 {{item.createdAt}}</text>
+          </view>
+
+          <!-- 操作按钮 -->
+          <view class="card-actions">
+            <view 
+              class="action-btn status-btn {{item.status}}"
+              data-id="{{item._id}}"
+              data-status="{{item.status}}"
+              data-type="exhibit"
+              catchtap="changeStatus"
+            >
+              <text>{{item.status === 'want' ? '✓ 想去' : '✓ 已去过'}}</text>
+            </view>
+            <view 
+              class="action-btn remove-btn"
+              data-id="{{item._id}}"
+              data-type="exhibit"
+              catchtap="removeFavorite"
+            >
+              <text>取消收藏</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 加载状态 -->
+    <view class="loading-status">
+      <view wx:if="{{loading && exhibitFavorites.length === 0}}" class="loading-tip">
+        <view class="loading-spinner"></view>
+        <text>加载中...</text>
+      </view>
+      <view wx:if="{{!loading && exhibitFavorites.length === 0}}" class="empty-tip">
+        <image class="empty-icon" src="/assets/images/empty.png" mode="aspectFit" />
+        <text>暂无收藏展品</text>
+        <text class="empty-sub">去逛逛，收藏感兴趣的展品吧</text>
+      </view>
+      <view wx:if="{{!loadingMore && !hasMore && exhibitFavorites.length > 0}}" class="no-more">
+        <text>— 没有更多了 —</text>
+      </view>
+      <view wx:if="{{loadingMore}}" class="loading-more">
+        <text>加载更多...</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 博物馆收藏列表 -->
+  <view wx:if="{{activeTab === 'museum'}}" class="favorites-list">
+    <block wx:for="{{museumFavorites}}" wx:key="_id">
+      <view class="favorite-card museum-card" data-id="{{item._id}}" bindtap="goToMuseumDetail">
+        <!-- 封面图 -->
+        <view class="card-image-wrapper">
+          <image 
+            class="card-image" 
+            src="{{item.imageUrl || '/assets/images/default-cover.jpg'}}" 
+            mode="aspectFill"
+          />
+          <!-- 状态标签 -->
+          <view class="status-badge {{item.status}}">
+            {{item.status === 'want' ? '想去' : '已去过'}}
+          </view>
+          <!-- 参观次数 -->
+          <view wx:if="{{item.visitedCount > 0}}" class="visit-count">
+            已去 {{item.visitedCount}} 次
+          </view>
+        </view>
+
+        <!-- 卡片内容 -->
+        <view class="card-content">
+          <view class="card-header">
+            <text class="card-title">{{item.museumName}}</text>
+          </view>
+          
+          <text class="card-desc">{{item.description}}</text>
+          
+          <view class="card-info">
+            <view class="info-item">
+              <text class="iconfont">📍</text>
+              <text>{{item.location}}</text>
+            </view>
+            <view wx:if="{{item.lastVisitAt}}" class="info-item">
+              <text class="iconfont">🕐</text>
+              <text>上次参观: {{item.lastVisitAt}}</text>
+            </view>
+          </view>
+
+          <view class="card-footer">
+            <text class="collect-time">收藏于 {{item.createdAt}}</text>
+          </view>
+
+          <!-- 操作按钮 -->
+          <view class="card-actions">
+            <view 
+              class="action-btn status-btn {{item.status}}"
+              data-id="{{item._id}}"
+              data-status="{{item.status}}"
+              data-type="museum"
+              catchtap="changeStatus"
+            >
+              <text>{{item.status === 'want' ? '✓ 想去' : '✓ 已去过'}}</text>
+            </view>
+            <view 
+              class="action-btn remove-btn"
+              data-id="{{item._id}}"
+              data-type="museum"
+              catchtap="removeFavorite"
+            >
+              <text>取消收藏</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 加载状态 -->
+    <view class="loading-status">
+      <view wx:if="{{loading && museumFavorites.length === 0}}" class="loading-tip">
+        <view class="loading-spinner"></view>
+        <text>加载中...</text>
+      </view>
+      <view wx:if="{{!loading && museumFavorites.length === 0}}" class="empty-tip">
+        <image class="empty-icon" src="/assets/images/empty.png" mode="aspectFit" />
+        <text>暂无收藏博物馆</text>
+        <text class="empty-sub">去发现更多有趣的博物馆吧</text>
+      </view>
+      <view wx:if="{{!loadingMore && !hasMore && museumFavorites.length > 0}}" class="no-more">
+        <text>— 没有更多了 —</text>
+      </view>
+      <view wx:if="{{loadingMore}}" class="loading-more">
+        <text>加载更多...</text>
+      </view>
+    </view>
+  </view>
+</view>

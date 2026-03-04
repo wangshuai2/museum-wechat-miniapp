@@ -5,6 +5,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { MuseumsModule } from './museums/museums.module';
 import { FootprintsModule } from './footprints/footprints.module';
+import { NotesModule } from './notes/notes.module';
+import { FavoritesModule } from './favorites/favorites.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { FootprintsModule } from './footprints/footprints.module';
     UsersModule,
     MuseumsModule,
     FootprintsModule,
+    NotesModule,
+    FavoritesModule,
   ],
 })
 export class AppModule {}

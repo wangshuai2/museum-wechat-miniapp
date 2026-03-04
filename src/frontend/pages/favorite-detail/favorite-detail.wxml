@@ -1,0 +1,172 @@
+<!--pages/favorite-detail/favorite-detail.wxml-->
+<view class="detail-container">
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text>加载中...</text>
+  </view>
+
+  <!-- 详情内容 -->
+  <block wx:if="{{!loading && detail}}">
+    <!-- 头部图片 -->
+    <view class="header-image" bindtap="previewImage">
+      <image 
+        class="cover-image" 
+        src="{{detail.imageUrl || '/assets/images/default-cover.jpg'}}" 
+        mode="aspectFill"
+      />
+      <!-- 状态标签 -->
+      <view class="status-tag {{currentStatus}}">
+        {{currentStatus === 'want' ? '想去' : '已去过'}}
+      </view>
+    </view>
+
+    <!-- 基本信息 -->
+    <view class="info-card">
+      <!-- 标题 -->
+      <view class="title-section">
+        <text class="title">{{type === 'exhibit' ? detail.exhibitName : detail.museumName}}</text>
+        <view class="tags" wx:if="{{detail.tags && detail.tags.length > 0}}">
+          <text 
+            wx:for="{{detail.tags}}" 
+            wx:key="*this" 
+            class="tag"
+          >{{item}}</text>
+        </view>
+      </view>
+
+      <!-- 状态切换 -->
+      <view class="status-section">
+        <view class="section-title">收藏状态</view>
+        <view class="status-options">
+          <view 
+            wx:for="{{statusOptions}}" 
+            wx:key="value"
+            class="status-option {{currentStatus === item.value ? 'active' : ''}}"
+            data-status="{{item.value}}"
+            bindtap="changeStatus"
+          >
+            <text class="status-icon">{{item.icon}}</text>
+            <text class="status-label">{{item.label}}</text>
+            <text wx:if="{{currentStatus === item.value && item.value === 'visited' && visitDate}}" class="status-date">{{visitDate}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 描述 -->
+      <view class="desc-section" wx:if="{{detail.description}}">
+        <view class="section-title">{{type === 'exhibit' ? '展品介绍' : '博物馆介绍'}}</view>
+        <text class="desc-text">{{detail.description}}</text>
+      </view>
+
+      <!-- 博物馆信息（展品详情页显示） -->
+      <view wx:if="{{type === 'exhibit' && detail.museumName}}" class="info-section">
+        <view class="section-title">所在博物馆</view>
+        <view class="info-row" bindtap="goToOriginal">
+          <text class="iconfont">🏛️</text>
+          <text class="info-value">{{detail.museumName}}</text>
+          <text class="arrow">›</text>
+        </view>
+      </view>
+
+      <!-- 博物馆详细信息 -->
+      <view wx:if="{{type === 'museum'}}" class="museum-extra">
+        <!-- 地址 -->
+        <view wx:if="{{detail.location}}" class="info-section">
+          <view class="section-title">地址</view>
+          <view class="info-row">
+            <text class="iconfont">📍</text>
+            <text class="info-value">{{detail.location}}</text>
+          </view>
+        </view>
+
+        <!-- 开放时间 -->
+        <view wx:if="{{detail.openTime}}" class="info-section">
+          <view class="section-title">开放时间</view>
+          <view class="info-row">
+            <text class="iconfont">🕐</text>
+            <text class="info-value">{{detail.openTime}}</text>
+          </view>
+        </view>
+
+        <!-- 门票 -->
+        <view wx:if="{{detail.ticketPrice}}" class="info-section">
+          <view class="section-title">门票</view>
+          <view class="info-row">
+            <text class="iconfont">🎫</text>
+            <text class="info-value">{{detail.ticketPrice}}</text>
+          </view>
+        </view>
+
+        <!-- 参观次数 -->
+        <view wx:if="{{detail.visitedCount > 0}}" class="info-section">
+          <view class="section-title">参观记录</view>
+          <view class="info-row">
+            <text class="iconfont">👣</text>
+            <text class="info-value">已去过 {{detail.visitedCount}} 次</text>
+          </view>
+          <view wx:if="{{detail.lastVisitAt}}" class="info-row sub-info">
+            <text class="info-value">最近一次：{{detail.lastVisitAt}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 备注 -->
+      <view class="notes-section">
+        <view class="section-header">
+          <view class="section-title">备注</view>
+          <view class="edit-btn" bindtap="editNotes">
+            <text>{{detail.notes ? '编辑' : '添加'}}</text>
+          </view>
+        </view>
+        <view class="notes-content">
+          <text wx:if="{{detail.notes}}" class="notes-text">{{detail.notes}}</text>
+          <text wx:else class="notes-placeholder">点击添加备注...</text>
+        </view>
+      </view>
+
+      <!-- 收藏时间 -->
+      <view class="meta-section">
+        <text class="meta-item">收藏于 {{detail.createdAt}}</text>
+      </view>
+    </view>
+
+    <!-- 底部操作 -->
+    <view class="action-bar">
+      <view class="action-btn primary" bindtap="goToOriginal">
+        <text>{{type === 'exhibit' ? '查看展品详情' : '查看博物馆详情'}}</text>
+      </view>
+      <view class="action-btn danger" bindtap="removeFavorite">
+        <text>取消收藏</text>
+      </view>
+    </view>
+  </block>
+</view>
+
+<!-- 日期选择器 -->
+<wx:if wx:if="{{showDatePicker}}">
+  <view class="date-picker-mask" bindtap="onDateCancel">
+    <view class="date-picker-container" catchtap="">
+      <view class="picker-header">
+        <text class="picker-cancel" bindtap="onDateCancel">取消</text>
+        <text class="picker-title">选择参观日期</text>
+        <text class="picker-confirm" bindtap="onDateConfirm">确定</text>
+      </view>
+      <picker-view 
+        class="picker-view"
+        value="{{pickerValue}}"
+        bindchange="onPickerChange"
+      >
+        <picker-view-column>
+          <view wx:for="{{years}}" wx:key="*this" class="picker-item">{{item}}年</view>
+        </picker-view-column>
+        <picker-view-column>
+          <view wx:for="{{months}}" wx:key="*this" class="picker-item">{{item}}月</view>
+        </picker-view-column>
+        <picker-view-column>
+          <view wx:for="{{days}}" wx:key="*this" class="picker-item">{{item}}日</view>
+        </picker-view-column>
+      </picker-view>
+    </view>
+  </view>
+</wx:if>

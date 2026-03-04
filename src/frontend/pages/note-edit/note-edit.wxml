@@ -1,0 +1,180 @@
+<!--pages/note-edit/note-edit.wxml-->
+<view class="edit-container">
+  <!-- 关联信息卡片 -->
+  <view class="info-card" wx:if="{{museumName || exhibitName}}">
+    <view class="info-row" wx:if="{{exhibitName}}">
+      <text class="info-label">展品</text>
+      <text class="info-value">{{exhibitName}}</text>
+    </view>
+    <view class="info-row" wx:if="{{museumName}}">
+      <text class="info-label">博物馆</text>
+      <text class="info-value">{{museumName}}</text>
+    </view>
+  </view>
+
+  <!-- 标题输入 -->
+  <view class="form-section">
+    <view class="section-header">
+      <text class="section-title">标题</text>
+      <text class="section-tip">（可选，最多100字）</text>
+    </view>
+    <input 
+      class="title-input"
+      placeholder="给你的笔记起个标题"
+      value="{{title}}"
+      maxlength="100"
+      bindinput="onTitleInput"
+    />
+  </view>
+
+  <!-- 内容输入 -->
+  <view class="form-section">
+    <view class="section-header">
+      <text class="section-title">内容</text>
+      <text class="required">*</text>
+      <text class="char-count">{{content.length}}/5000</text>
+    </view>
+    <textarea 
+      class="content-input"
+      placeholder="记录你的参观感受..."
+      value="{{content}}"
+      maxlength="5000"
+      auto-height
+      bindinput="onContentInput"
+    />
+  </view>
+
+  <!-- 图片上传 -->
+  <view class="form-section">
+    <view class="section-header">
+      <text class="section-title">图片</text>
+      <text class="section-tip">（最多{{maxImages}}张）</text>
+    </view>
+    <view class="image-grid">
+      <!-- 已上传图片 -->
+      <block wx:for="{{images}}" wx:key="*this">
+        <view class="image-item">
+          <image 
+            class="preview-image" 
+            src="{{item}}" 
+            mode="aspectFill"
+            data-url="{{item}}"
+            bindtap="previewImage"
+          />
+          <view class="delete-btn" data-index="{{index}}" catchtap="deleteImage">
+            <text>×</text>
+          </view>
+        </view>
+      </block>
+      
+      <!-- 添加按钮 -->
+      <view 
+        class="image-item add-btn" 
+        wx:if="{{images.length < maxImages}}"
+        bindtap="chooseImage"
+      >
+        <text class="add-icon">+</text>
+        <text class="add-text">添加图片</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 标签 -->
+  <view class="form-section">
+    <view class="section-header">
+      <text class="section-title">标签</text>
+      <text class="section-tip">（最多5个）</text>
+    </view>
+    
+    <!-- 已添加标签 -->
+    <view class="tags-container" wx:if="{{tags.length > 0}}">
+      <view class="tag-item" wx:for="{{tags}}" wx:key="*this">
+        <text>{{item}}</text>
+        <text class="tag-delete" data-index="{{index}}" bindtap="deleteTag">×</text>
+      </view>
+    </view>
+    
+    <!-- 推荐标签 -->
+    <view class="suggested-tags">
+      <text class="suggest-title">推荐标签：</text>
+      <view class="suggest-list">
+        <view 
+          class="suggest-tag {{tags.includes(item) ? 'disabled' : ''}}"
+          wx:for="{{suggestedTags}}" 
+          wx:key="*this"
+          data-tag="{{item}}"
+          bindtap="addSuggestedTag"
+        >{{item}}</view>
+      </view>
+    </view>
+    
+    <button class="add-tag-btn" bindtap="showTagInputModal">+ 添加自定义标签</button>
+  </view>
+
+  <!-- 可见性 -->
+  <view class="form-section">
+    <view class="section-header">
+      <text class="section-title">可见性</text>
+    </view>
+    <view class="visibility-options">
+      <view 
+        class="visibility-item {{visibility === 'private' ? 'active' : ''}}"
+        data-type="private"
+        bindtap="toggleVisibility"
+      >
+        <view class="radio-circle">
+          <view class="radio-dot" wx:if="{{visibility === 'private'}}"></view>
+        </view>
+        <view class="option-content">
+          <text class="option-title">仅自己可见</text>
+          <text class="option-desc">私人笔记，仅自己可以查看</text>
+        </view>
+      </view>
+      <view 
+        class="visibility-item {{visibility === 'public' ? 'active' : ''}}"
+        data-type="public"
+        bindtap="toggleVisibility"
+      >
+        <view class="radio-circle">
+          <view class="radio-dot" wx:if="{{visibility === 'public'}}"></view>
+        </view>
+        <view class="option-content">
+          <text class="option-title">公开分享</text>
+          <text class="option-desc">其他用户可以发现和查看</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="save-section">
+    <button class="save-btn {{saving ? 'disabled' : ''}}" bindtap="saveNote">
+      {{saving ? '保存中...' : '保存笔记'}}
+    </button>
+  </view>
+</view>
+
+<!-- 标签输入弹窗 -->
+<view wx:if="{{showTagInput}}" class="modal-mask" bindtap="hideTagInputModal">
+  <view class="tag-modal" catchtap="">
+    <view class="modal-header">
+      <text class="modal-title">添加标签</text>
+      <text class="modal-close" bindtap="hideTagInputModal">×</text>
+    </view>
+    
+    <view class="modal-body">
+      <input 
+        class="tag-input"
+        placeholder="输入标签名称"
+        value="{{newTag}}"
+        maxlength="10"
+        bindinput="onTagInput"
+      />
+    </view>
+    
+    <view class="modal-footer">
+      <button class="modal-btn cancel" bindtap="hideTagInputModal">取消</button>
+      <button class="modal-btn confirm" bindtap="addTag">添加</button>
+    </view>
+  </view>
+</view>

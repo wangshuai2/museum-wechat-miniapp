@@ -42,13 +42,32 @@
       </view>
       <view class="stat-divider"></view>
       <view class="stat-item">
-        <text class="stat-value">{{stats.totalReservations}}</text>
-        <text class="stat-label">预约记录</text>
+        <text class="stat-value">{{stats.notesCount || 0}}</text>
+        <text class="stat-label">我的笔记</text>
       </view>
       <view class="stat-divider"></view>
       <view class="stat-item">
-        <text class="stat-value">{{stats.favorites}}</text>
-        <text class="stat-label">收藏展品</text>
+        <text class="stat-value">{{stats.favoritesCount || 0}}</text>
+        <text class="stat-label">我的收藏</text>
+      </view>
+    </view>
+
+    <!-- 功能菜单 -->
+    <view class="menu-section">
+      <view class="menu-item" bindtap="goToFootprints">
+        <view class="menu-icon">👣</view>
+        <view class="menu-text">参观足迹</view>
+        <view class="menu-arrow">›</view>
+      </view>
+      <view class="menu-item" bindtap="goToNotes">
+        <view class="menu-icon">📝</view>
+        <view class="menu-text">我的笔记</view>
+        <view class="menu-arrow">›</view>
+      </view>
+      <view class="menu-item" bindtap="goToFavorites">
+        <view class="menu-icon">⭐</view>
+        <view class="menu-text">我的收藏</view>
+        <view class="menu-arrow">›</view>
       </view>
     </view>
 
