@@ -1,0 +1,19 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/museum-detail/museum-detail",
+    "pages/profile/profile",
+    "pages/footprints/footprints"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1890ff",
+    "navigationBarTitleText": "博物馆导览",
+    "navigationBarTextStyle": "white"
+  },
+  
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

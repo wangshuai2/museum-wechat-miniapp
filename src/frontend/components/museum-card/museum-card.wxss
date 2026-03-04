@@ -1,0 +1,145 @@
+/* components/museum-card/museum-card.wxss */
+
+.museum-card {
+  display: flex;
+  background-color: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+/* 横向布局 */
+.museum-card.horizontal {
+  flex-direction: row;
+}
+
+/* 纵向布局 */
+.museum-card.vertical {
+  flex-direction: column;
+}
+
+.museum-card.vertical .card-image-wrapper {
+  width: 100%;
+  height: 300rpx;
+}
+
+.museum-card.vertical .card-image {
+  width: 100%;
+  height: 300rpx;
+}
+
+.museum-card.vertical .card-content {
+  padding: 20rpx;
+}
+
+/* 图片区域 */
+.card-image-wrapper {
+  position: relative;
+  width: 200rpx;
+  height: 200rpx;
+  flex-shrink: 0;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+}
+
+/* 分类标签 */
+.category-badge {
+  position: absolute;
+  top: 16rpx;
+  left: 16rpx;
+  padding: 6rpx 16rpx;
+  background-color: rgba(24, 144, 255, 0.9);
+  color: #fff;
+  font-size: 22rpx;
+  border-radius: 20rpx;
+}
+
+/* 内容区域 */
+.card-content {
+  flex: 1;
+  padding: 16rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+/* 标题 */
+.card-header {
+  display: flex;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 描述 */
+.card-desc {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin: 12rpx 0;
+}
+
+/* 底部信息 */
+.card-footer {
+  display: flex;
+  flex-direction: column;
+}
+
+.location-info {
+  display: flex;
+  align-items: center;
+  font-size: 22rpx;
+  color: #666;
+  margin-bottom: 8rpx;
+}
+
+.location-info icon {
+  margin-right: 8rpx;
+}
+
+.tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tag-item {
+  padding: 4rpx 12rpx;
+  margin-right: 8rpx;
+  font-size: 20rpx;
+  color: #999;
+  background-color: #f5f5f5;
+  border-radius: 4rpx;
+}
+
+/* 操作按钮 */
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12rpx;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56rpx;
+  height: 56rpx;
+  margin-left: 16rpx;
+  background-color: #f5f5f5;
+  border-radius: 50%;
+}

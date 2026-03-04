@@ -1,0 +1,158 @@
+<!--pages/profile/profile.wxml-->
+<view class="profile-container">
+  <!-- 未登录状态 -->
+  <view wx:if="{{!isLoggedIn}}" class="not-logged-in">
+    <image class="avatar-placeholder" src="/assets/images/default-avatar.png" mode="aspectFill" />
+    <text class="login-tip">登录后查看个人信息</text>
+    <button class="login-btn" bindtap="goToLogin">立即登录</button>
+  </view>
+
+  <!-- 已登录状态 -->
+  <block wx:if="{{isLoggedIn}}">
+    <!-- 用户信息卡片 -->
+    <view class="user-card">
+      <view class="user-info">
+        <image 
+          class="avatar" 
+          src="{{userInfo.avatar || '/assets/images/default-avatar.png'}}" 
+          mode="aspectFill" 
+        />
+        <view class="user-detail">
+          <text class="username">{{userInfo.username || '用户'}}</text>
+          <text class="user-id">ID: {{userInfo.userId || '--'}}</text>
+        </view>
+      </view>
+      <view class="user-actions">
+        <view class="action-btn" bindtap="editProfile">
+          <icon type="waiting" size="16" color="#1890ff" />
+          <text>编辑资料</text>
+        </view>
+        <view class="action-btn" bindtap="goToSettings">
+          <icon type="waiting" size="16" color="#1890ff" />
+          <text>设置</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 统计数据 -->
+    <view class="stats-card">
+      <view class="stat-item">
+        <text class="stat-value">{{stats.totalVisits}}</text>
+        <text class="stat-label">参观次数</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value">{{stats.totalReservations}}</text>
+        <text class="stat-label">预约记录</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value">{{stats.favorites}}</text>
+        <text class="stat-label">收藏展品</text>
+      </view>
+    </view>
+
+    <!-- 标签页 -->
+    <view class="tabs">
+      <view 
+        wx:for="{{tabs}}" 
+        wx:key="key"
+        class="tab-item {{activeTab === item.key ? 'active' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onTabChange"
+      >
+        {{item.name}}
+      </view>
+    </view>
+
+    <!-- 参观足迹 -->
+    <view wx:if="{{activeTab === 'history'}}" class="content-section">
+      <view wx:if="{{visitHistory.length > 0}}" class="history-list">
+        <view 
+          wx:for="{{visitHistory}}" 
+          wx:key="_id"
+          class="history-item"
+          data-id="{{item.exhibitId}}"
+          bindtap="goToDetail"
+        >
+          <view class="history-info">
+            <text class="history-name">{{item.exhibitName}}</text>
+            <text class="history-time">{{item.visitTime}}</text>
+          </view>
+          <view class="history-duration">
+            <text>参观时长 {{item.duration}}分钟</text>
+          </view>
+        </view>
+      </view>
+      <view wx:else class="empty-state">
+        <image class="empty-icon" src="/assets/images/empty.png" mode="aspectFit" />
+        <text class="empty-text">暂无参观记录</text>
+        <button class="empty-btn" bindtap="goToLogin">去逛逛</button>
+      </view>
+    </view>
+
+    <!-- 我的预约 -->
+    <view wx:if="{{activeTab === 'reservation'}}" class="content-section">
+      <view wx:if="{{reservations.length > 0}}" class="reservation-list">
+        <view 
+          wx:for="{{reservations}}" 
+          wx:key="_id"
+          class="reservation-item"
+        >
+          <view class="reservation-header">
+            <text class="reservation-name">{{item.exhibitName}}</text>
+            <text class="reservation-status status-{{item.status}}">
+              {{item.status === 'pending' ? '待确认' : item.status === 'confirmed' ? '已确认' : item.status === 'completed' ? '已完成' : '已取消'}}
+            </text>
+          </view>
+          <view class="reservation-detail">
+            <view class="detail-row">
+              <icon type="waiting" size="14" color="#999" />
+              <text>{{item.date}} {{item.timeSlot}}</text>
+            </view>
+            <view class="detail-row">
+              <icon type="waiting" size="14" color="#999" />
+              <text>参观人数：{{item.visitorCount}}人</text>
+            </view>
+          </view>
+          <view class="reservation-actions">
+            <view 
+              wx:if="{{item.status === 'confirmed'}}"
+              class="action-btn primary"
+              data-item="{{item}}"
+              bindtap="showQRCode"
+            >
+              查看二维码
+            </view>
+            <view 
+              wx:if="{{item.status === 'pending' || item.status === 'confirmed'}}"
+              class="action-btn danger"
+              data-id="{{item._id}}"
+              bindtap="cancelReservation"
+            >
+              取消预约
+            </view>
+            <view 
+              wx:if="{{item.status === 'completed'}}"
+              class="action-btn"
+              data-id="{{item.exhibitId}}"
+              bindtap="goToDetail"
+            >
+              再次参观
+            </view>
+          </view>
+        </view>
+      </view>
+      <view wx:else class="empty-state">
+        <image class="empty-icon" src="/assets/images/empty.png" mode="aspectFit" />
+        <text class="empty-text">暂无预约记录</text>
+        <button class="empty-btn" bindtap="goToLogin">去预约</button>
+      </view>
+    </view>
+
+    <!-- 退出登录 -->
+    <view class="logout-section">
+      <button class="logout-btn" bindtap="logout">退出登录</button>
+    </view>
+  </block>
+</view>

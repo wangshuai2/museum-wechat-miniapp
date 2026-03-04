@@ -1,0 +1,215 @@
+<!--pages/museum-detail/museum-detail.wxml-->
+<view class="detail-container">
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text>加载中...</text>
+  </view>
+
+  <!-- 详情内容 -->
+  <block wx:if="{{!loading && detail}}">
+    <!-- 头部图片 -->
+    <view class="header-image">
+      <image 
+        class="cover-image" 
+        src="{{detail.imageUrl || '/assets/images/default-cover.jpg'}}" 
+        mode="aspectFill"
+      />
+      <view class="header-overlay">
+        <view class="header-info">
+          <text class="title">{{detail.name}}</text>
+          <view class="tags">
+            <text wx:for="{{detail.tags}}" wx:key="*this" class="tag">{{item}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作栏 -->
+    <view class="action-bar">
+      <view class="action-item" bindtap="onCollect">
+        <icon type="success" size="20" color="#1890ff" />
+        <text>收藏</text>
+      </view>
+      <view class="action-item" bindtap="onNavigate">
+        <icon type="waiting" size="20" color="#1890ff" />
+        <text>导航</text>
+      </view>
+      <button class="action-item share-btn" open-type="share">
+        <icon type="success" size="20" color="#1890ff" />
+        <text>分享</text>
+      </button>
+    </view>
+
+    <!-- 基本信息 -->
+    <view class="info-card">
+      <view class="info-row">
+        <text class="info-label">展馆位置</text>
+        <text class="info-value">{{detail.location}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">所属分类</text>
+        <text class="info-value">{{detail.category}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">开放时间</text>
+        <text class="info-value">{{detail.openTime || '09:00-17:00'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">参观人次</text>
+        <text class="info-value">{{detail.visitorCount || 0}}人</text>
+      </view>
+    </view>
+
+    <!-- 标签页 -->
+    <view class="tabs">
+      <view 
+        wx:for="{{tabs}}" 
+        wx:key="key"
+        class="tab-item {{activeTab === item.key ? 'active' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onTabChange"
+      >
+        {{item.name}}
+      </view>
+    </view>
+
+    <!-- 标签页内容 -->
+    <view class="tab-content">
+      <!-- 简介 -->
+      <view wx:if="{{activeTab === 'intro'}}" class="content-section">
+        <view class="section-title">展品简介</view>
+        <text class="section-text">{{detail.description}}</text>
+        
+        <view wx:if="{{detail.historicalBackground}}" class="section-title mt-30">历史背景</view>
+        <text wx:if="{{detail.historicalBackground}}" class="section-text">{{detail.historicalBackground}}</text>
+      </view>
+
+      <!-- 图片 -->
+      <view wx:if="{{activeTab === 'images'}}" class="content-section">
+        <view class="section-title">展品图片</view>
+        <view class="image-grid">
+          <image 
+            wx:for="{{detail.images || [detail.imageUrl]}}" 
+            wx:key="*this"
+            class="grid-image"
+            src="{{item}}"
+            mode="aspectFill"
+            data-url="{{item}}"
+            bindtap="previewImage"
+          />
+        </view>
+      </view>
+
+      <!-- 语音导览 -->
+      <view wx:if="{{activeTab === 'audio'}}" class="content-section">
+        <view class="section-title">语音导览</view>
+        <view wx:if="{{detail.audioGuide}}" class="audio-player" bindtap="playAudio">
+          <icon type="success" size="40" color="#1890ff" />
+          <view class="audio-info">
+            <text class="audio-title">点击播放语音导览</text>
+            <text class="audio-duration">预计时长 5分钟</text>
+          </view>
+        </view>
+        <view wx:else class="empty-audio">
+          <text>暂无语音导览</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部按钮 -->
+    <view class="bottom-bar">
+      <view class="price-info">
+        <text class="price">{{detail.ticketInfo || '免费参观'}}</text>
+      </view>
+      <button class="reserve-btn" bindtap="showReservationModal">立即预约</button>
+    </view>
+  </block>
+</view>
+
+<!-- 预约弹窗 -->
+<view wx:if="{{showReservation}}" class="modal-mask" bindtap="hideReservationModal">
+  <view class="modal-content" catchtap="">
+    <view class="modal-header">
+      <text class="modal-title">预约参观</text>
+      <text class="modal-close" bindtap="hideReservationModal">×</text>
+    </view>
+    
+    <view class="modal-body">
+      <!-- 日期选择 -->
+      <view class="form-group">
+        <text class="form-label">选择日期</text>
+        <picker 
+          mode="date" 
+          value="{{reservationForm.date}}" 
+          start="{{minDate}}" 
+          end="{{maxDate}}"
+          bindchange="onDateChange"
+        >
+          <view class="picker-value">
+            {{reservationForm.date || '请选择日期'}}
+          </view>
+        </picker>
+      </view>
+
+      <!-- 时段选择 -->
+      <view class="form-group">
+        <text class="form-label">选择时段</text>
+        <view class="time-slots">
+          <view 
+            wx:for="{{availableSlots}}" 
+            wx:key="time"
+            class="time-slot {{item.available ? '' : 'disabled'}} {{reservationForm.timeSlot === item.time ? 'active' : ''}}"
+            data-slot="{{item}}"
+            bindtap="onTimeSlotChange"
+          >
+            <text class="slot-time">{{item.time}}</text>
+            <text class="slot-remaining">余{{item.remaining}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 参观人数 -->
+      <view class="form-group">
+        <text class="form-label">参观人数</text>
+        <input 
+          class="form-input" 
+          type="number" 
+          value="{{reservationForm.visitorCount}}"
+          placeholder="请输入人数"
+          bindinput="onVisitorCountChange"
+        />
+      </view>
+
+      <!-- 联系人 -->
+      <view class="form-group">
+        <text class="form-label">联系人</text>
+        <input 
+          class="form-input" 
+          type="text" 
+          value="{{reservationForm.contactName}}"
+          placeholder="请输入联系人姓名"
+          data-field="contactName"
+          bindinput="onInputChange"
+        />
+      </view>
+
+      <!-- 联系电话 -->
+      <view class="form-group">
+        <text class="form-label">联系电话</text>
+        <input 
+          class="form-input" 
+          type="number" 
+          value="{{reservationForm.contactPhone}}"
+          placeholder="请输入联系电话"
+          data-field="contactPhone"
+          bindinput="onInputChange"
+        />
+      </view>
+    </view>
+
+    <view class="modal-footer">
+      <button class="submit-btn" bindtap="submitReservation">确认预约</button>
+    </view>
+  </view>
+</view>

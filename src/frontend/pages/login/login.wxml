@@ -1,0 +1,120 @@
+<!--pages/login/login.wxml-->
+<view class="login-container">
+  <!-- Logo 区域 -->
+  <view class="logo-section">
+    <image class="logo" src="/assets/images/logo.png" mode="aspectFit" />
+    <text class="app-name">博物馆导览</text>
+    <text class="app-slogan">探索文化，发现美好</text>
+  </view>
+
+  <!-- 表单区域 -->
+  <view class="form-section">
+    <view class="form-title">{{mode === 'login' ? '登录' : '注册'}}</view>
+
+    <!-- 用户名 -->
+    <view class="form-item">
+      <view class="input-wrapper">
+        <icon type="waiting" size="18" color="#999" class="input-icon" />
+        <input 
+          class="form-input"
+          type="text"
+          placeholder="请输入用户名"
+          value="{{formData.username}}"
+          data-field="username"
+          bindinput="onInputChange"
+        />
+      </view>
+    </view>
+
+    <!-- 密码 -->
+    <view class="form-item">
+      <view class="input-wrapper">
+        <icon type="waiting" size="18" color="#999" class="input-icon" />
+        <input 
+          class="form-input"
+          type="{{passwordVisible ? 'text' : 'password'}}"
+          placeholder="请输入密码"
+          value="{{formData.password}}"
+          data-field="password"
+          bindinput="onInputChange"
+        />
+        <icon 
+          type="{{passwordVisible ? 'success' : 'waiting'}}" 
+          size="18" 
+          color="#999" 
+          class="toggle-icon"
+          bindtap="togglePassword"
+        />
+      </view>
+    </view>
+
+    <!-- 邮箱（注册时显示） -->
+    <view wx:if="{{mode === 'register'}}" class="form-item">
+      <view class="input-wrapper">
+        <icon type="waiting" size="18" color="#999" class="input-icon" />
+        <input 
+          class="form-input"
+          type="text"
+          placeholder="请输入邮箱"
+          value="{{formData.email}}"
+          data-field="email"
+          bindinput="onInputChange"
+        />
+      </view>
+    </view>
+
+    <!-- 手机号（注册时显示） -->
+    <view wx:if="{{mode === 'register'}}" class="form-item">
+      <view class="input-wrapper">
+        <icon type="waiting" size="18" color="#999" class="input-icon" />
+        <input 
+          class="form-input"
+          type="number"
+          placeholder="请输入手机号（选填）"
+          value="{{formData.phone}}"
+          data-field="phone"
+          bindinput="onInputChange"
+        />
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <button 
+      class="submit-btn {{loading ? 'disabled' : ''}}"
+      disabled="{{loading}}"
+      bindtap="handleSubmit"
+    >
+      {{loading ? '处理中...' : (mode === 'login' ? '登录' : '注册')}}
+    </button>
+
+    <!-- 切换模式 -->
+    <view class="switch-mode">
+      <text>{{mode === 'login' ? '没有账号？' : '已有账号？'}}</text>
+      <text class="switch-btn" bindtap="switchMode">
+        {{mode === 'login' ? '立即注册' : '立即登录'}}
+      </text>
+    </view>
+  </view>
+
+  <!-- 其他登录方式 -->
+  <view class="other-login">
+    <view class="divider-line">
+      <text>其他登录方式</text>
+    </view>
+    
+    <view class="other-login-btns">
+      <view class="login-btn wechat" bindtap="wxLogin">
+        <icon type="success" size="24" color="#07C160" />
+        <text>微信登录</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 用户协议 -->
+  <view class="agreement">
+    <text>登录即表示同意</text>
+    <text class="link">《用户协议》</text>
+    <text>和</text>
+    <text class="link">《隐私政策》</text>
+  </view>
+</view>

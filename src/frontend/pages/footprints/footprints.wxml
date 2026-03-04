@@ -1,0 +1,116 @@
+<!--pages/footprints/footprints.wxml-->
+<view class="footprints-container">
+  <!-- 未登录状态 -->
+  <view wx:if="{{!isLoggedIn}}" class="not-logged-in">
+    <image class="empty-icon" src="/assets/images/empty.png" mode="aspectFit" />
+    <text class="login-tip">登录后查看您的参观足迹</text>
+    <button class="login-btn" bindtap="goToLogin">立即登录</button>
+  </view>
+
+  <!-- 已登录状态 -->
+  <block wx:if="{{isLoggedIn}}">
+    <!-- 顶部统计区 -->
+    <view class="stats-section">
+      <view class="stats-card">
+        <view class="stat-item">
+          <text class="stat-value">{{stats.museumCount}}</text>
+          <text class="stat-label">已参观博物馆</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-value">{{stats.totalVisits}}</text>
+          <text class="stat-label">总参观次数</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-value">{{stats.recentVisit}}</text>
+          <text class="stat-label">最近参观</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 足迹列表 -->
+    <view class="footprints-section">
+      <view class="section-header">
+        <text class="section-title">参观记录</text>
+        <text class="section-count">共{{footprints.length}}条</text>
+      </view>
+
+      <!-- 有数据 -->
+      <view wx:if="{{footprints.length > 0}}" class="footprints-list">
+        <view 
+          wx:for="{{footprints}}" 
+          wx:key="_id"
+          class="footprint-card"
+          data-id="{{item.museumId}}"
+          bindtap="goToMuseumDetail"
+        >
+          <view class="card-header">
+            <image 
+              class="museum-image" 
+              src="{{item.museumImage || '/assets/images/default-museum.png'}}" 
+              mode="aspectFill" 
+            />
+            <view class="museum-info">
+              <text class="museum-name">{{item.museumName}}</text>
+              <view class="visit-time">
+                <icon type="waiting" size="14" color="#999" />
+                <text>{{item.visitTime}}</text>
+              </view>
+            </view>
+          </view>
+          
+          <view class="card-content">
+            <view class="info-row" wx:if="{{item.rating}}">
+              <text class="info-label">我的评分</text>
+              <view class="rating-stars">
+                <text 
+                  wx:for="{{5}}" 
+                  wx:for-item="star" 
+                  wx:for-index="starIndex"
+                  wx:key="starIndex"
+                  class="star {{starIndex < item.rating ? 'active' : ''}}"
+                >★</text>
+              </view>
+            </view>
+            <view class="info-row" wx:if="{{item.visitDuration}}">
+              <text class="info-label">参观时长</text>
+              <text class="info-value">{{item.visitDuration}}分钟</text>
+            </view>
+            <view class="info-row" wx:if="{{item.exhibitsVisited}}">
+              <text class="info-label">参观展厅</text>
+              <text class="info-value">{{item.exhibitsVisited}}个</text>
+            </view>
+          </view>
+
+          <view class="card-footer">
+            <text class="view-detail">查看详情 ></text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view wx:else class="empty-state">
+        <image class="empty-icon" src="/assets/images/empty.png" mode="aspectFit" />
+        <text class="empty-text">暂无参观记录</text>
+        <text class="empty-desc">去探索精彩的博物馆吧~</text>
+        <button class="explore-btn" bindtap="goToExplore">探索博物馆</button>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view wx:if="{{footprints.length > 0 && hasMore}}" class="load-more">
+      <view wx:if="{{loading}}" class="loading">
+        <text>加载中...</text>
+      </view>
+      <view wx:else class="load-more-btn" bindtap="loadMore">
+        <text>加载更多</text>
+      </view>
+    </view>
+
+    <!-- 没有更多 -->
+    <view wx:if="{{footprints.length > 0 && !hasMore}}" class="no-more">
+      <text>— 已经到底啦 —</text>
+    </view>
+  </block>
+</view>

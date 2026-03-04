@@ -1,0 +1,59 @@
+<!--components/museum-card/museum-card.wxml-->
+<view 
+  class="museum-card {{layout}}" 
+  bindtap="onTap"
+>
+  <!-- 图片区域 -->
+  <view class="card-image-wrapper">
+    <image 
+      class="card-image" 
+      src="{{data.imageUrl || '/assets/images/default-cover.jpg'}}" 
+      mode="aspectFill"
+      data-url="{{data.imageUrl}}"
+      catchtap="onPreviewImage"
+    />
+    <!-- 分类标签 -->
+    <view wx:if="{{data.category}}" class="category-badge">
+      {{data.category}}
+    </view>
+  </view>
+
+  <!-- 信息区域 -->
+  <view class="card-content">
+    <!-- 标题 -->
+    <view class="card-header">
+      <text class="card-title">{{data.name}}</text>
+    </view>
+
+    <!-- 描述 -->
+    <text class="card-desc">{{data.description}}</text>
+
+    <!-- 底部信息 -->
+    <view class="card-footer">
+      <!-- 位置 -->
+      <view class="location-info">
+        <icon type="waiting" size="14" color="#1890ff" />
+        <text>{{data.location}}</text>
+      </view>
+
+      <!-- 标签 -->
+      <view wx:if="{{showTags && data.tags && data.tags.length}}" class="tags-wrapper">
+        <text 
+          wx:for="{{data.tags}}" 
+          wx:key="*this" 
+          class="tag-item"
+        >{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="card-actions">
+      <view class="action-btn" catchtap="onCollect">
+        <icon type="success" size="16" color="#1890ff" />
+      </view>
+      <view class="action-btn" catchtap="onShare">
+        <icon type="success" size="16" color="#1890ff" />
+      </view>
+    </view>
+  </view>
+</view>
